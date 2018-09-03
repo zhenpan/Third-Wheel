@@ -12,6 +12,7 @@ immutable Inner_binary
     e_vec::Array{Float64}
     E::Float64
     a::Float64
+    χ::Float64
 end
 
 immutable Third_wheel
@@ -36,7 +37,9 @@ function Inner_binary(;m1 = 1., m2 = 1., a = 1000., e_mag = 0.3)
     L_vec = L_mag * c_hat
     e_vec = e_mag * a_hat
 
-    return Inner_binary(m1, m2, a_hat, b_hat, c_hat, S1, S2, L_vec, e_vec, E, a)
+    χ = dot( (S1/m1 + S2/m2)/(m1+m2), c_hat)
+
+    return Inner_binary(m1, m2, a_hat, b_hat, c_hat, S1, S2, L_vec, e_vec, E, a, χ)
 end
 
 
@@ -126,11 +129,12 @@ function Inbn_updater!(inbn::Inner_binary, outsd::Third_wheel, M0::Float64)
     δS2 = [0., 0., 0.]
     S1  = inbn.S1 + δS1
     S2  = inbn.S2 + δS2
+    χ   = dot( (S1/m1 + S2/m2)/(m1+m2), c_hat)
 
     δL3_vec = -(L_vec - inbn.L_vec)
     δE3     = -δE
 
-    return Inner_binary(m1, m2, a_hat, b_hat, c_hat, S1, S2, L_vec, e_vec, E, a), δL3_vec, δE3
+    return Inner_binary(m1, m2, a_hat, b_hat, c_hat, S1, S2, L_vec, e_vec, E, a, χ), δL3_vec, δE3
 end
 
 
