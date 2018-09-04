@@ -57,7 +57,6 @@ function Third_wheel(;EA3=[0.,0.,0.], E3=0., q = 1.e4, m1 = 1., m2 = 1., m3 = 1.
     μ3    = m3*M12/M123
     L3_vec= sqrt(2q*μ3*m3*M12)*C_hat
     A_vec = μ3 * M123 * A_hat
-    #E3    = 0. #0.5*μ3*(1.e-4)^2      #V(R=∞) = 30 km/s
 
     return Third_wheel(m3, A_hat, B_hat, C_hat, L3_vec, A_vec, E3, q)
 end
@@ -106,11 +105,11 @@ function Inbn_updater!(inbn::Inner_binary, outsd::Third_wheel, M0::Float64)
     scale = (3π/4)*(a/q)^1.5*m3/sqrt(2*M12*M123)
     δe1   = scale * cross(𝚥_A*A_hat+𝚥_B*B_hat-4𝚥_vec+5(A_a^2 + B_a^2)*𝚥_vec, e_vec)
     e_vec = rot_app(e_vec, δe1)
-    e_vec = ( 1. - scale * (5𝚥_mag)*(A_a*A_b+B_a*B_b) )*e_vec
+    e_vec = ( 1.- scale * (5𝚥_mag)*(A_a*A_b+B_a*B_b) )*e_vec
 
     δ𝚥1   = scale*( cross(𝚥_A*A_hat+𝚥_B*B_hat, 𝚥_vec) -5e_mag^2*(A_a*A_c+B_a*B_c)*b_hat )
     𝚥_vec = rot_app(𝚥_vec, δ𝚥1)
-    𝚥_vec = (1. + scale*(5e_mag^2)*(A_a*A_b + B_a*B_b)/𝚥_mag)*𝚥_vec
+    𝚥_vec = ( 1. + scale*(5e_mag^2)*(A_a*A_b + B_a*B_b)/𝚥_mag )*𝚥_vec
 
     e_mag = norm(e_vec)                                   # dot(e, 𝚥) = 0, j=√1-e^2
     𝚥_vec = 𝚥_vec-dot(𝚥_vec, e_vec)/e_mag^2*e_vec
@@ -155,9 +154,13 @@ function Outsd_updater!(outsd::Third_wheel, inbn::Inner_binary, δL3_vec::Array{
     a  = inbn.a
     q  = outsd.q
 
-    δA_vec = (3π/8)*(𝚥_A*𝚥_B-5e_A*e_B)*outsd.A_hat + (π/16)*( (5𝚥_B^2-𝚥_A^2)- 5*(5e_B^2-e_A^2))*outsd.B_hat + (π/4)*(𝚥_B*𝚥_vec-5e_B*e_vec)
-    δA_vec = -1.5*m1*m2*m3/(m1+m2)*(a^2/q^2)*δA_vec
-    A_vec  = outsd.A_vec + δA_vec
+    scale = -1.5*m1*m2*m3/(m1+m2)*(a^2/q^2)
+    δtmp  = (π/4)*(𝚥_B*𝚥_vec-5e_B*e_vec)
+    δA1   = (π/16)*( (5𝚥_B^2-𝚥_A^2)- 5*(5e_B^2-e_A^2))*outsd.B_hat + dot(δtmp, outsd.B_hat)*outsd.B_hat + dot(δtmp, outsd.C_hat)*outsd.C_hat
+    δA1   = scale*δA1
+    δA_mag= scale*( (3π/8)*(𝚥_A*𝚥_B-5e_A*e_B) + dot(δtmp, outsd.A_hat) )
+    A_vec = rot_app(outsd.A_vec, δA1)
+    A_vec = (1 + δA_mag/norm(A_vec))*A_vec
 
     L3_vec = outsd.L3_vec + δL3_vec
     L3_mag = norm(L3_vec)
