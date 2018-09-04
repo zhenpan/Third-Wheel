@@ -106,11 +106,11 @@ function Inbn_updater!(inbn::Inner_binary, outsd::Third_wheel, M0::Float64)
     scale = (3π/4)*(a/q)^1.5*m3/sqrt(2*M12*M123)
     δe1   = scale * cross(𝚥_A*A_hat+𝚥_B*B_hat-4𝚥_vec+5(A_a^2 + B_a^2)*𝚥_vec, e_vec)
     e_vec = rot_app(e_vec, δe1)
-    e_vec = ( 1. + scale * (5𝚥_mag)*(A_a*A_b+B_a*B_b) )*e_vec
+    e_vec = ( 1. - scale * (5𝚥_mag)*(A_a*A_b+B_a*B_b) )*e_vec
 
     δ𝚥1   = scale*( cross(𝚥_A*A_hat+𝚥_B*B_hat, 𝚥_vec) -5e_mag^2*(A_a*A_c+B_a*B_c)*b_hat )
     𝚥_vec = rot_app(𝚥_vec, δ𝚥1)
-    𝚥_vec = (1. + 5e_mag^2*(A_a*A_b + B_a*B_b)/𝚥_mag)*𝚥_vec
+    𝚥_vec = (1. + scale*(5e_mag^2)*(A_a*A_b + B_a*B_b)/𝚥_mag)*𝚥_vec
 
     e_mag = norm(e_vec)                                   # dot(e, 𝚥) = 0, j=√1-e^2
     𝚥_vec = 𝚥_vec-dot(𝚥_vec, e_vec)/e_mag^2*e_vec

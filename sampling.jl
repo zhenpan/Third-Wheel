@@ -1,6 +1,11 @@
 using SpecialFunctions
 
 function Samp(N_smp::Int, E_σ::Float64, q_min::Float64, q_max::Float64)
+    ϕ = 2π*rand(N_smp)
+    θ = asin.(rand(N_smp))
+    ψ = 2π*rand(N_smp)
+    EA3_smp = hcat(ϕ, θ, ψ)
+
     U_uni  = rand(N_smp)
     E3_smp = zeros(N_smp)
     for i = 1:N_smp
@@ -9,5 +14,5 @@ function Samp(N_smp::Int, E_σ::Float64, q_min::Float64, q_max::Float64)
 
     U_uni  = rand(N_smp)
     q_smp  = q_min + (q_max-q_min)*U_uni
-    return E3_smp, q_smp
+    return EA3_smp, E3_smp, q_smp
 end
