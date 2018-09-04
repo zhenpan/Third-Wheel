@@ -156,7 +156,7 @@ function Outsd_updater!(outsd::Third_wheel, inbn::Inner_binary, δL3_vec::Array{
 
     scale = -1.5*m1*m2*m3/(m1+m2)*(a^2/q^2)
     δtmp  = (π/4)*(𝚥_B*𝚥_vec-5e_B*e_vec)
-    δA1   = (π/16)*( (5𝚥_B^2-𝚥_A^2)- 5*(5e_B^2-e_A^2))*outsd.B_hat + dot(δtmp, outsd.B_hat)*outsd.B_hat + dot(δtmp, outsd.C_hat)*outsd.C_hat
+    δA1   = (π/16)*((5𝚥_B^2-𝚥_A^2)- 5*(5e_B^2-e_A^2))*outsd.B_hat + dot(δtmp, outsd.B_hat)*outsd.B_hat + dot(δtmp, outsd.C_hat)*outsd.C_hat
     δA1   = scale*δA1
     δA_mag= scale*( (3π/8)*(𝚥_A*𝚥_B-5e_A*e_B) + dot(δtmp, outsd.A_hat) )
     A_vec = rot_app(outsd.A_vec, δA1)
@@ -164,7 +164,7 @@ function Outsd_updater!(outsd::Third_wheel, inbn::Inner_binary, δL3_vec::Array{
 
     L3_vec = outsd.L3_vec + δL3_vec
     L3_mag = norm(L3_vec)
-    A_vec  = A_vec - dot(A_vec, L3_vec)/L3_mag^2*L3_vec
+    A_vec  = A_vec - dot(A_vec, L3_vec)/L3_mag^2*L3_vec  #A⋅L3 = 0 and A_mag = μ3*M123
     A_vec  = m3*(m1+m2)/norm(A_vec)*A_vec
 
     A_hat  = normalize(A_vec)

@@ -2,7 +2,7 @@ using SpecialFunctions
 
 function Samp(N_smp::Int, E_σ::Float64, q_min::Float64, q_max::Float64)
     ϕ = 2π*rand(N_smp)
-    θ = asin.(rand(N_smp))
+    θ = acos.(2*rand(N_smp)-1.)
     ψ = 2π*rand(N_smp)
     EA3_smp = hcat(ϕ, θ, ψ)
 
