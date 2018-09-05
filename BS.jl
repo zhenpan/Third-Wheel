@@ -57,8 +57,9 @@ function Third_wheel(;EA3=[0.,0.,0.], E3=0., q = 1.e4, m1 = 1., m2 = 1., m3 = 1.
     μ3    = m3*M12/M123
     L3_vec= sqrt(2q*μ3*m3*M12)*C_hat
     A_vec = μ3 * M123 * A_hat
+    e3    = 1.
 
-    return Third_wheel(m3, A_hat, B_hat, C_hat, L3_vec, A_vec, E3, q)
+    return Third_wheel(m3, A_hat, B_hat, C_hat, L3_vec, A_vec, E3, q, e3)
 end
 
 function Inbn_updater!(inbn::Inner_binary, outsd::Third_wheel, M0::Float64)
@@ -73,8 +74,8 @@ function Inbn_updater!(inbn::Inner_binary, outsd::Third_wheel, M0::Float64)
 
     f1_α, f2_α, f1_β, f2_β = f12(inbn, outsd)
     K   = sqrt( 2*(M12/M123)*(q^3/a^3) )
-    δE  = (m1*m2*m3)/(m1+m2)*(a^2/q^3)*(-sqrt(π)/24. )*(  K^2.5 )*exp(-2K/3.)*(f1_α*cos(M0)  + f2_α*sin(M0))
-    δE += (m1*m2*m3)/(m1+m2)*(a^2/q^3)*(-sqrt(8π)/24.)*((2K)^2.5)*exp(-4K/3.)*(f1_β*cos(2M0) + f2_β*sin(2M0))
+    δE  = (m1*m2*m3)/(m1+m2)*(a^2/q^3)*(-sqrt(π)/24. )*(K^2.5)*exp(-2K/3.)*(f1_α*cos(M0)  + f2_α*sin(M0))
+    δE += (m1*m2*m3)/(m1+m2)*(a^2/q^3)*(-sqrt(8π)/24.)*(K^2.5)*exp(-4K/3.)*(f1_β*cos(2M0) + f2_β*sin(2M0))
 
     A_hat = outsd.A_hat
     B_hat = outsd.B_hat
