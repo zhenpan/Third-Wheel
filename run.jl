@@ -18,7 +18,7 @@ N_cap = 0
 
 for i = 1:N_smp
     outsd = Third_wheel(EA3= EA3_smp[i,:], E3=E3_smp[i], q = q_smp[i], m1 = inbn.m1, m2 = inbn.m2, m3 = m3)
-    inbn, Ns, cap  = scatter!(i, inbn, outsd)
+    inbn, Ns, cap  = scatter!(i, inbn, outsd, Nlim = 1000)
 
     N_cap += cap
     Nsct[i]= Ns
@@ -28,4 +28,4 @@ end
 
 using PyPlot
 plot(ein)
-plot(Nsct/200.)
+plot(Nsct/1000.)

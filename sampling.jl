@@ -17,7 +17,7 @@ function Samp(N_smp::Int, E_σ::Float64, q_min::Float64, q_max::Float64)
     return EA3_smp, E3_smp, q_smp
 end
 
-function scatter!(ith, inbn, outsd)
+function scatter!(ith, inbn, outsd; Nlim = 1000)
     M0   = 2π*rand()
     inbn, δL3_vec, δE3 = Inbn_updater!(inbn, outsd, M0)
     E3   = outsd.E3 + δE3
@@ -25,9 +25,10 @@ function scatter!(ith, inbn, outsd)
     Nsct = 1
     Npos = δE3 > 0. ? 1:0
     Nneg = δE3 > 0. ? 0:1
-    println(@sprintf "(ith,Ns,Np)=(%4i, %3i, %3i), E3=%.2e, δE3=%.2e, E12=%.2e, M0/2π=%.2f, q/a=%.4e, e=%.4e, e3=%.4e, a=%.3e, χ=%.3f" ith Nsct Npos outsd.E3 δE3 inbn.E M0/(2π) outsd.q/inbn.a norm(inbn.e_vec) outsd.e3 inbn.a inbn.χ)
+    println(@sprintf "(ith,Ns,Np)=(%4i, %3i, %3i), E3=%.2e, δE3=%.2e, E12=%.2e,
+    M0/2π=%.2f, q/a=%.4e, e=%.4e, e3=%.4e, a=%.3e, χ=%.3f" ith Nsct Npos outsd.E3 δE3 inbn.E M0/(2π) outsd.q/inbn.a norm(inbn.e_vec) outsd.e3 inbn.a inbn.χ)
 
-    while (E3 < 0.) & (Nsct < 200)
+    while (E3 < 0.) & (Nsct < Nlim)
         outsd = Outsd_updater!(outsd, inbn, δL3_vec, δE3)
         M0    = 2π*rand()
         inbn, δL3_vec, δE3 = Inbn_updater!(inbn, outsd, M0)
@@ -39,7 +40,7 @@ function scatter!(ith, inbn, outsd)
         println(@sprintf "(ith,Ns,Np)= (%4i %3i, %3i), E3= %.2e, δE3=%.2e, E12=%.2e, M0/2π=%.2f, q/a=%.4e, e=%.4e, e3=%.4e, a=%.3e,χ=%.3f" ith Nsct Npos outsd.E3 δE3 inbn.E M0/(2π) outsd.q/inbn.a norm(inbn.e_vec) outsd.e3 inbn.a inbn.χ)
     end
 
-    cap = Nsct >= 200 ? 1:0
+    cap = Nsct >= Nlim ? 1:0
     return inbn, Nsct, cap
 end
 

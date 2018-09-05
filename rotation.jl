@@ -14,3 +14,20 @@ A_hat, B_hat, C_hat = Samp(1000)
 
 tt = A_hat[1].*A_hat[2] + B_hat[1].*B_hat[2]
 histogram(tt,nbins=20)
+
+function rand_walk()
+    Ns = 1
+    E3 = cos(2π*rand())
+    while (E3 < 0.) & (Ns < 1000)
+        E3 += cos(2π*rand())
+        Ns +=1
+    end
+    return Ns
+end
+
+N_smp = 500
+N_sct = zeros(N_smp)
+
+for i = 1:N_smp
+    N_sct[i] = rand_walk()
+end
