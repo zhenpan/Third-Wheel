@@ -24,6 +24,7 @@ immutable Third_wheel
     A_vec::Array{Float64}
     E3::Float64
     q::Float64
+    e3::Float64
 end
 
 function Inner_binary(;m1 = 1., m2 = 1., a = 1000., e_mag = 0.3)
@@ -154,6 +155,7 @@ function Outsd_updater!(outsd::Third_wheel, inbn::Inner_binary, δL3_vec::Array{
     m3 = outsd.m3
     a  = inbn.a
     q  = outsd.q
+    M12= m1+m2
 
     scale = -1.5*m1*m2*m3/(m1+m2)*(a^2/q^2)
     δtmp  = (π/4)*(𝚥_B*𝚥_vec-5e_B*e_vec)
@@ -173,10 +175,12 @@ function Outsd_updater!(outsd::Third_wheel, inbn::Inner_binary, δL3_vec::Array{
     B_hat  = cross(C_hat, A_hat)
 
     E3     = outsd.E3 + δE3
-    μ3     = m3*(m1+m2)/(m1+m2+m3)
+    μ3     = m3*M12/(m1+m2+m3)
     q      = 0.5*L3_mag^2/(μ3*m3*(m1+m2))
 
-    return Third_wheel(m3, A_hat, B_hat, C_hat, L3_vec, A_vec, E3, q)
+    e3 = sqrt( 1+2*E3*L3_mag^2/(μ3*(m3*M12)^2) )
+
+    return Third_wheel(m3, A_hat, B_hat, C_hat, L3_vec, A_vec, E3, q, e3)
 end
 
 function f12(inbn::Inner_binary, outsd::Third_wheel)
