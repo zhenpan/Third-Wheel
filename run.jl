@@ -1,5 +1,6 @@
 include("BS.jl")
 include("sampling.jl")
+using PyPlot
 
 inbn  = Inner_binary(m1 = 10., m2 = 10., a = 1.e8, e_mag = 0.1)
 
@@ -26,6 +27,6 @@ for i = 1:N_smp
     ein[i] = norm(inbn.e_vec)
 end
 
-using PyPlot
+
 plot(ein)
 plot(Nsct/1000.)

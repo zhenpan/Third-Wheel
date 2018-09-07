@@ -57,8 +57,8 @@ function Third_wheel(;EA3=[0.,0.,0.], E3=0., q = 1.e4, m1 = 1., m2 = 1., m3 = 1.
     M123  = m1+m2+m3
     μ3    = m3*M12/M123
     L3_vec= sqrt(2q*μ3*m3*M12)*C_hat
-    A_vec = μ3 * M123 * A_hat
-    e3    = 1.
+    e3    = sqrt(1.+2*E3*norm(L3_vec)^2/(μ3*(m3*M12)^2))
+    A_vec = μ3 * M123 * e3* A_hat
 
     return Third_wheel(m3, A_hat, B_hat, C_hat, L3_vec, A_vec, E3, q, e3)
 end
@@ -157,6 +157,13 @@ function Outsd_updater!(outsd::Third_wheel, inbn::Inner_binary, δL3_vec::Array{
     q  = outsd.q
     M12= m1+m2
 
+    E3     = outsd.E3 + δE3
+    L3_vec = outsd.L3_vec + δL3_vec
+    L3_mag = norm(L3_vec)
+    μ3     = m3*M12/(m1+m2+m3)
+    q      = 0.5*L3_mag^2/(μ3*m3*M12)
+    e3     = sqrt( 1+2*E3*L3_mag^2/(μ3*(m3*M12)^2) )
+
     scale = -1.5*m1*m2*m3/(m1+m2)*(a^2/q^2)
     δtmp  = (π/4)*(𝚥_B*𝚥_vec-5e_B*e_vec)
     δA1   = (π/16)*((5𝚥_B^2-𝚥_A^2)- 5*(5e_B^2-e_A^2))*outsd.B_hat + dot(δtmp, outsd.B_hat)*outsd.B_hat + dot(δtmp, outsd.C_hat)*outsd.C_hat
@@ -165,20 +172,12 @@ function Outsd_updater!(outsd::Third_wheel, inbn::Inner_binary, δL3_vec::Array{
     A_vec = rot_app(outsd.A_vec, δA1)
     A_vec = (1 + δA_mag/norm(A_vec))*A_vec
 
-    L3_vec = outsd.L3_vec + δL3_vec
-    L3_mag = norm(L3_vec)
-    A_vec  = A_vec - dot(A_vec, L3_vec)/L3_mag^2*L3_vec  #A⋅L3 = 0 and A_mag = μ3*M123
-    A_vec  = m3*(m1+m2)/norm(A_vec)*A_vec
+    A_vec = A_vec - dot(A_vec, L3_vec)/L3_mag^2*L3_vec  #A⋅L3 = 0 and A_mag = μ3*M123*e3
+    A_vec = (m3*M12*e3)/norm(A_vec)*A_vec
 
-    A_hat  = normalize(A_vec)
-    C_hat  = normalize(L3_vec)
-    B_hat  = cross(C_hat, A_hat)
-
-    E3     = outsd.E3 + δE3
-    μ3     = m3*M12/(m1+m2+m3)
-    q      = 0.5*L3_mag^2/(μ3*m3*(m1+m2))
-
-    e3 = sqrt( 1+2*E3*L3_mag^2/(μ3*(m3*M12)^2) )
+    A_hat = normalize(A_vec)
+    C_hat = normalize(L3_vec)
+    B_hat = cross(C_hat, A_hat)
 
     return Third_wheel(m3, A_hat, B_hat, C_hat, L3_vec, A_vec, E3, q, e3)
 end
