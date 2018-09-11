@@ -56,10 +56,12 @@ function Third_wheel(;EA3=[0.,0.,0.], E3=0., q = 1.e4, m1 = 1., m2 = 1., m3 = 1.
     M12   = m1+m2
     M123  = m1+m2+m3
     μ3    = m3*M12/M123
-    L3_vec= sqrt(2q*μ3*m3*M12)*C_hat
-    e3    = sqrt(1.+2*E3*norm(L3_vec)^2/(μ3*(m3*M12)^2))
+    e3    = 1 + 2*E3*q/(μ3*M12)
+    L3_vec= sqrt((1+e3)*q*μ3*m3*M12)*C_hat
     A_vec = μ3 * M123 * e3* A_hat
 
+    #L3_vec= sqrt(2q*μ3*m3*M12)*C_hat
+    #e3    = sqrt(1.+2*E3*norm(L3_vec)^2/(μ3*(m3*M12)^2))
     return Third_wheel(m3, A_hat, B_hat, C_hat, L3_vec, A_vec, E3, q, e3)
 end
 
@@ -161,8 +163,8 @@ function Outsd_updater!(outsd::Third_wheel, inbn::Inner_binary, δL3_vec::Array{
     L3_vec = outsd.L3_vec + δL3_vec
     L3_mag = norm(L3_vec)
     μ3     = m3*M12/(m1+m2+m3)
-    q      = 0.5*L3_mag^2/(μ3*m3*M12)
     e3     = sqrt( 1+2*E3*L3_mag^2/(μ3*(m3*M12)^2) )
+    q      = 1./(1+e3)*L3_mag^2/(μ3*m3*M12)
 
     scale = -1.5*m1*m2*m3/(m1+m2)*(a^2/q^2)
     δtmp  = (π/4)*(𝚥_B*𝚥_vec-5e_B*e_vec)
